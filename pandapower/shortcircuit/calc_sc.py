@@ -100,7 +100,7 @@ def calc_sc(net, bus=None,
 
         **inverse_y** (bool, True) defines if complete inverse should be used instead of LU factorization, factorization version is in experiment which should be faster and memory efficienter
 
-        **use_pre_fault_voltage** (bool, False) whether to consider the pre-fault grid state (superposition method, "Type C")
+        **use_pre_fault_voltage** (bool, False) whether to consider the pre-fault grid state (superposition method, "Type C"). The user must first execute pp.runpp(net) before executing sc.calc_sc in this case
 
 
     OUTPUT:
