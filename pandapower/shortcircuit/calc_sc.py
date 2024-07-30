@@ -159,7 +159,7 @@ def calc_sc(net, bus=None,
 
     if fault in ("2ph", "3ph"):
         _calc_sc(net, bus)
-    elif fault == "1ph":
+    elif fault == "1ph": #ToDo: 2Ph-G
         _calc_sc_1ph(net, bus)
     else:
         raise ValueError("Invalid fault %s" % fault)
@@ -228,7 +228,7 @@ def _calc_sc(net, bus):
         ppci["internal"].pop("ybus_fact")
 
 
-def _calc_sc_1ph(net, bus):
+def _calc_sc_1ph(net, bus): #ToDo: 2Ph-G (rename the function)
     """
     calculation method for single phase to ground short-circuit currents
     """
@@ -275,7 +275,7 @@ def _calc_sc_1ph(net, bus):
     _calc_rx(net, ppci_0, ppci_bus)
     _calc_rx(net, ppci_2, ppci_bus)
 
-    _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, ppci_bus)
+    _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, ppci_bus) #ToDo: 2Ph-G (rename the function)
     # from here on, the V_ikss in ppci_0, ppci_1, ppci_2 are in phase frame!
 
     if net._options["branch_results"]:

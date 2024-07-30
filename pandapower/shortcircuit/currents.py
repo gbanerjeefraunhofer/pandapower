@@ -104,6 +104,7 @@ def _calc_ikss(net, ppci, bus_idx):
 
 
 def _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, bus_idx):
+    fault = net._options["fault"] # adding by gourab if 2ph-g will be added here
     case = net._options["case"]
     c = ppci_1["bus"][bus_idx, C_MIN] if case == "min" else ppci_1["bus"][bus_idx, C_MAX]
 
@@ -116,7 +117,7 @@ def _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, bus_idx):
     z_equiv_2 = ppci_2["bus"][bus_idx, R_EQUIV] + ppci_2["bus"][bus_idx, X_EQUIV] * 1j
 
     # z_equiv 1 and 2 are the same, so could also be 2 * z_equiv_1 + z_equiv_0:
-    z_equiv = z_equiv_0 + z_equiv_1 + z_equiv_2
+    z_equiv = z_equiv_0 + z_equiv_1 + z_equiv_2 #ToDo: 2Ph-G
 
     # Only for test, should correspondant to PF result
     baseZ = ppci_1["bus"][bus_idx, BASE_KV] ** 2 / ppci_1["baseMVA"]
@@ -159,13 +160,14 @@ def _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, bus_idx):
     ppci_1["internal"]["valid_V"] = valid_V
     ppci_2["internal"]["valid_V"] = valid_V
 
-    ikss1 = 3 * V0[bus_idx, np.arange(n_sc_bus)] / z_equiv
+    ikss1 = 3 * V0[bus_idx, np.arange(n_sc_bus)] / z_equiv #ToDo: 2Ph-G
 
     if net["_options"]["inverse_y"]:
         Zbus_0 = ppci_0["internal"]["Zbus"]
         Zbus_1 = ppci_1["internal"]["Zbus"]
         Zbus_2 = ppci_2["internal"]["Zbus"]
 
+        # ToDo: 2Ph-G
         V_ikss_0 = 0 - ikss1 * Zbus_0[:, bus_idx] / 3  # initial value for zero-sequence voltage is 0
         V_ikss_1 = V0 - ikss1 * Zbus_1[:, bus_idx] / 3 if valid_V else 0 - ikss1 * Zbus_1[:, bus_idx] / 3
         V_ikss_2 = 0 - ikss1 * Zbus_2[:, bus_idx] / 3  # initial value for negative-sequence voltage is 0
@@ -179,6 +181,7 @@ def _calc_ikss_1ph(net, ppci_0, ppci_1, ppci_2, bus_idx):
         for ix, b in enumerate(bus_idx):
             ikss = np.zeros((n_bus, 1), dtype=np.complex128)
             ikss[b] = ikss1[ix]
+            # ToDo: 2Ph-G
             V_ikss_0[:, [ix]] = 0 - ybus_fact_0(ikss) / 3
             V_ikss_1[:, [ix]] = V0[:, [ix]] - ybus_fact_1(ikss) / 3 if valid_V else 0 - ybus_fact_1(ikss) / 3
             V_ikss_2[:, [ix]] = 0 - ybus_fact_2(ikss) / 3
